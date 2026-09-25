@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const AuthContext = createContext();
 
@@ -140,6 +140,7 @@ export function AuthProvider({ children }) {
       }}
     >
       {children}
+      <Toaster position="top-center" />
     </AuthContext.Provider>
   );
 }
