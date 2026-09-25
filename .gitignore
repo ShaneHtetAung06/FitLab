@@ -9,14 +9,17 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-AGENTS.md
-CLAUDE.md
+
+
 # testing
 /coverage
 
 # next.js
 /.next/
 /out/
+
+AGENTS.md
+CLAUDE.md
 
 # production
 /build

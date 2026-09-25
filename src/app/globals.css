@@ -1,26 +1,401 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground-rgb: 20, 19, 18;
+  --background-rgb: 253, 252, 251;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* In-page anchors (the hero's "Meet the coaches" jump) glide instead of cut.
+   Scoped to the media query so it is never forced on someone who opted out. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/**
+ * A small set of shared recipes.
+ *
+ * The app used to repeat long Tailwind strings for every button and card, which
+ * made a restyle a hunt through twenty files. These classes name the handful of
+ * patterns the design actually has, so the look is defined once. Anything
+ * one-off still gets inline utilities.
+ */
+@layer components {
+  /* Small uppercase label that sits above a display heading. */
+  .eyebrow {
+    @apply text-[11px] font-bold uppercase tracking-eyebrow text-primary-600;
+  }
+
+  .eyebrow-muted {
+    @apply text-[11px] font-bold uppercase tracking-eyebrow text-ink-400;
+  }
+
+  /* High-contrast serif used for headings and large figures. */
+  .display {
+    @apply font-display font-bold tracking-tight text-ink-900;
+  }
+
+  /* The transition covers transform as well as colour so every button has a
+     press: the tactile part of the interaction, not a restyle. */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm
+      font-semibold transition-[color,background-color,border-color,box-shadow,transform]
+      duration-300 ease-soft active:scale-[0.97] disabled:opacity-50
+      disabled:cursor-not-allowed disabled:active:scale-100 focus:outline-none
+      focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500
+      hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  .btn-sm {
+    @apply px-3.5 py-2 text-[13px];
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700;
+  }
+
+  .btn-dark {
+    @apply bg-ink-900 text-white hover:bg-ink-800;
+  }
+
+  .btn-outline {
+    @apply border border-ink-200 bg-white text-ink-900 hover:border-ink-900;
+  }
+
+  .btn-ghost {
+    @apply text-ink-600 hover:text-primary-600;
+  }
+
+  /* Hairline-bordered surface. The design uses borders, not shadows. */
+  .card {
+    @apply rounded-card border border-ink-100 bg-white;
+  }
+
+  /* Opt-in hover behaviour for cards that are actually links or buttons. Kept
+     off `.card` itself so static panels (account details, empty states) do not
+     react to a pointer that cannot do anything with them. */
+  .card-hover {
+    @apply transition-[transform,border-color,box-shadow] duration-300 ease-soft
+      hover:-translate-y-1.5 hover:scale-[1.01] hover:border-ink-300 hover:shadow-lift;
+  }
+
+  .field {
+    @apply w-full rounded-md border border-ink-200 bg-white px-3.5 py-2.5 text-sm
+      text-ink-900 placeholder:text-ink-400 transition-colors
+      focus:border-ink-900 focus:outline-none focus:ring-0;
+  }
+
+  /* Rounded filter chip. Active state is the near-black fill. */
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white
+      px-3.5 py-1.5 text-[13px] font-medium text-ink-600
+      transition-[color,background-color,border-color,transform] duration-300 ease-soft
+      hover:-translate-y-0.5 hover:shadow-sm hover:border-ink-900 hover:text-ink-900 active:translate-y-0
+      active:scale-[0.97];
+  }
+
+  .pill-active {
+    @apply border-ink-900 bg-ink-900 text-white hover:text-white;
+  }
+
+  /* Tiny uppercase tag overlaid on course thumbnails. */
+  .tag {
+    @apply inline-flex items-center rounded-full bg-white/95 px-2.5 py-1 text-[10px]
+      font-bold uppercase tracking-wider text-ink-900 backdrop-blur;
+  }
+
+  .tag-sale {
+    @apply bg-primary-600 text-white;
+  }
+
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-ink-200 border-t-primary-600;
+  }
+
+  /* Underlined active state for the top navigation. */
+  .nav-link {
+    @apply relative text-sm font-medium text-ink-500 transition-colors duration-200
+      hover:text-ink-900;
+  }
+
+  .nav-link-active {
+    @apply text-ink-900;
+  }
+
+  .nav-link-active::after {
+    content: '';
+    @apply absolute -bottom-[21px] left-0 right-0 h-[2px] bg-ink-900;
+  }
+
+  /**
+   * The navbar upgrades that static underline into one shared bar that slides
+   * between links (and previews the link under the cursor). The class is only
+   * set once the bar has been measured, so with JavaScript unavailable the
+   * per-link pseudo-element above still marks the current page.
+   */
+  .has-nav-indicator .nav-link-active::after {
+    @apply hidden;
+  }
+
+  /* Same geometry as the pseudo-element it replaces: 2px, flush above the
+     navbar's bottom border. */
+  .nav-indicator {
+    @apply pointer-events-none absolute -bottom-[21px] h-[2px] bg-ink-900
+      transition-[left,width,opacity] duration-300 ease-soft;
+  }
+
+  /* Hover underline that wipes out from the left. Used for footer links. */
+  .link-sweep {
+    @apply relative;
+  }
+
+  .link-sweep::after {
+    content: '';
+    @apply absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-current
+      transition-transform duration-300 ease-soft;
+  }
+
+  .link-sweep:hover::after,
+  .link-sweep:focus-visible::after {
+    @apply scale-x-100;
+  }
+
+  /* Neutral placeholder block with a sweep across it, for pending content. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-ink-50 animate-shimmer;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.85) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Hides the default number/range chrome on the price slider. */
+  .range-brand {
+    @apply h-1 w-full cursor-pointer appearance-none rounded-full bg-ink-200;
+  }
+
+  .range-brand::-webkit-slider-thumb {
+    @apply h-4 w-4 appearance-none rounded-full border-2 border-white bg-primary-600;
+    box-shadow: 0 1px 4px rgba(20, 19, 18, 0.3);
+  }
+
+  .range-brand::-moz-range-thumb {
+    @apply h-4 w-4 rounded-full border-2 border-white bg-primary-600;
+  }
+
+  /**
+   * Scroll reveals.
+   *
+   * The hidden starting state is gated behind `.motion-ready`, a class an inline
+   * script in the layout puts on <html> before first paint. If that script
+   * never runs, nothing is ever hidden, so the page can never end up blank
+   * waiting on an observer that will not arrive.
+   */
+  .motion-ready .reveal {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    transition:
+      opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .motion-ready .reveal.is-revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Same idea, but the container stays put and its children come in one after
+     another. Used for card grids and list rows. */
+  .motion-ready .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .motion-ready .reveal-stagger.is-revealed > * {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .motion-ready .reveal-stagger > *:nth-child(1) {
+    transition-delay: 0ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(2) {
+    transition-delay: 70ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(3) {
+    transition-delay: 140ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(4) {
+    transition-delay: 210ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(5) {
+    transition-delay: 280ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(6) {
+    transition-delay: 350ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(7) {
+    transition-delay: 400ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(8) {
+    transition-delay: 450ms;
+  }
+  .motion-ready .reveal-stagger > *:nth-child(9) {
+    transition-delay: 500ms;
+  }
+  /* Anything past the ninth row shares a delay; by then the eye has moved on. */
+  .motion-ready .reveal-stagger > *:nth-child(n + 10) {
+    transition-delay: 540ms;
+  }
+
+  /**
+   * Mount/unmount surfaces (navbar dropdown, mobile panel). The component keeps
+   * the element in the DOM for the length of the exit animation and flips
+   * data-state, so closing is animated rather than a disappearance.
+   */
+  .pop-panel[data-state='open'] {
+    @apply animate-scale-in;
+  }
+
+  .pop-panel[data-state='closed'] {
+    @apply animate-scale-out;
+  }
+
+  /* Ignores input while animating out, so a click during the exit cannot land on
+     a menu item that is already on its way off screen. */
+  .pop-panel[data-state='closed'],
+  .collapse-grid[data-state='closed'] {
+    @apply pointer-events-none;
+  }
+
+  /* Menu rows arriving just behind their panel. */
+  .menu-stagger[data-state='open'] > * {
+    @apply animate-fade-up-sm;
+  }
+
+  .menu-stagger[data-state='open'] > *:nth-child(1) {
+    animation-delay: 30ms;
+  }
+  .menu-stagger[data-state='open'] > *:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  .menu-stagger[data-state='open'] > *:nth-child(3) {
+    animation-delay: 90ms;
+  }
+  .menu-stagger[data-state='open'] > *:nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .menu-stagger[data-state='open'] > *:nth-child(5) {
+    animation-delay: 150ms;
+  }
+  .menu-stagger[data-state='open'] > *:nth-child(n + 6) {
+    animation-delay: 180ms;
+  }
+
+  /**
+   * Height collapse without a hard-coded pixel height: 0fr -> 1fr is
+   * interpolatable in current browsers, and degrades to an instant open
+   * elsewhere rather than to a broken layout.
+   */
+  .collapse-grid {
+    @apply grid transition-[grid-template-rows] duration-300 ease-soft;
+    grid-template-rows: 0fr;
+  }
+
+  .collapse-grid[data-state='open'] {
+    grid-template-rows: 1fr;
+  }
+
+  /* Progress track that fills from empty to its real width on first paint.
+     Pair with style={{ '--bar-width': '62%' }}. */
+  .bar-fill {
+    @apply animate-bar-grow;
+  }
+
+  /* Applied to the page container on every route change. */
+  .page-enter {
+    @apply animate-fade-up-sm;
+  }
+
+  /**
+   * A counting figure is server-rendered at its final value, then held invisible
+   * until the count starts. Otherwise the real number paints first and visibly
+   * snaps back to zero when the animation picks it up.
+   */
+  .motion-ready .count-up:not(.is-counting) {
+    opacity: 0;
+  }
+}
+
+/**
+ * Motion opt-out.
+ *
+ * Everything above is decoration, so it all collapses to its end state. The
+ * spinner keeps turning: it communicates that work is in progress, and a frozen
+ * ring reads as a hung page.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .spinner {
+    animation: spin 1s linear infinite !important;
+  }
+
+  .motion-ready .reveal,
+  .motion-ready .reveal-stagger > *,
+  .motion-ready .count-up {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Custom scrollbar, warmed up to match the paper tones. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f2ef;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bfbcb5;
+  border: 2px solid #f4f2ef;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9c988f;
 }
