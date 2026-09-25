@@ -10,7 +10,7 @@ const PROTECTED_COURSE_PATH = /^\/courses\/[^/]+\/learn\/?$/;
 const ADMIN_LOGIN = '/admin/login';
 
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('token')?.value;
 
