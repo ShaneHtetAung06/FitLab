@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 
-
+/**
+ * Labelled password input with a show/hide toggle.
+ *
+ * Extracted because the login and register forms had the same twenty lines of
+ * inline SVG each. Each field owns its own visibility so revealing a password
+ * does not reveal the confirmation alongside it.
+ */
 export default function PasswordField({
   id,
   label,
