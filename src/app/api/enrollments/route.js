@@ -6,12 +6,7 @@ import { authenticateRequest } from '@/lib/auth';
 import { computeProgress } from '@/lib/enrollment';
 import { summarizeCurriculum } from '@/lib/courseOptions';
 
-/**
- * GET /api/enrollments
- *
- * The signed-in learner's own enrollments, newest first, each with its progress
- * summary so the dashboard can render progress bars without extra requests.
- */
+
 export async function GET(request) {
   try {
     const auth = await authenticateRequest(request);
