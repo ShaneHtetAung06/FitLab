@@ -1,38 +1,61 @@
-import { Inter, Playfair_Display } from "next/font/google";
-import "./globals.css";
+import { DM_Sans, Playfair_Display } from 'next/font/google';
+import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
+import { SocketProvider } from '@/context/SocketContext';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import PageTransition from '@/components/PageTransition';
+import { Toaster } from 'react-hot-toast';
 
-/**
- * The variable names here are the ones tailwind.config.js reads in its
- * fontFamily entries (`--font-sans`, `--font-display`), so `font-sans` and
- * `font-display` in markup resolve to these without any extra wiring.
- */
-const sans = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
+
+const sans = DM_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
 });
 
 const display = Playfair_Display({
-  variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display',
 });
 
 export const metadata = {
-  title: "FitLab",
-  description: "Coaching, courses, and training plans.",
+  title: 'FitLab - Premium Fitness Education',
+  description:
+    'Learn from elite trainers who have lived what they teach. Structured fitness courses designed for people serious about results.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`${sans.variable} ${display.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col font-sans">
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
+      <body className="bg-paper font-sans text-ink-900">
+       
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('motion-ready')",
+          }}
+        />
         <AuthProvider>
-          {children}
+
+          <SocketProvider>
+            <Navbar />
+            <main className="min-h-screen">
+              <PageTransition>{children}</PageTransition>
+            </main>
+            <Footer />
+          </SocketProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: '#141312',
+                color: '#fdfcfb',
+                borderRadius: '8px',
+                fontSize: '14px',
+              },
+            }}
+          />
         </AuthProvider>
       </body>
     </html>
